@@ -56,4 +56,4 @@ jobs:
           mvn test \
             -Pframework \
             -Dbrowser=${{ github.event.inputs.browser || 'chrome' }} \
-            -Denv=${{ github.event.inputs.environment || 'qa' }} 
+            -Denv=${{ github.event.inputs.environment || 'qa' }}
