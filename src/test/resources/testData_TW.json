@@ -1,7 +1,10 @@
 [
   {
-    "UN": "DUDCHSN",
-    "PW": "Secure!@#",
-    "Title": "LoginPage | DUDCHSN"
+    "UN": "NMDC",
+    "PW": "Secure!@#2",
+    "Activity": "FAMS",
+    "Title": "TenderWizard",
+    "Home_Page_Title": "Home | NMDC",
+    "MenuName": "Facilities"
   }
 ]

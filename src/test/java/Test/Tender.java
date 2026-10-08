@@ -16,6 +16,6 @@ public class Tender extends BaseTest
     {
         HomePage home = new HomePage(page, baseurl);
         LoginPage loginpage = home.LogintoApplication("Home | DUDCHSN");
-        loginpage.Login_Page("DUDCHSN","Secure!@#", "LoginPage | DUDCHSN");
+        loginpage.Login_Page("DUDCHSN","Secure!@#", "Tender", "LoginPage | DUDCHSN");
     }
 }

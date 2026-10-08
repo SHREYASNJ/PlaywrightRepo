@@ -22,9 +22,10 @@ public class Tender_DataDriven extends BaseTest
     {
         String username = data.get("UN");
         String Password = data.get("PW");
+        String Activity = data.get("Activity");
         String PageTitle = data.get("Title");
         HomePage home = new HomePage(page, baseurl);
         LoginPage loginpage = home.LogintoApplication(PageTitle);
-        loginpage.Login_Page(username,Password, PageTitle);
+        loginpage.Login_Page(username,Password,Activity,PageTitle);
     }
 }
