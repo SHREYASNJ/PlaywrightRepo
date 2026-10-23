@@ -34,5 +34,6 @@ public class LoginPage
         frame.locator(activity).selectOption(new SelectOption().setLabel(Activity));
         frame.getByRole(AriaRole.BUTTON, new FrameLocator.GetByRoleOptions().setName("Login")).click();
         page.screenshot(new Page.ScreenshotOptions().setPath(Paths.get("pagescreenshot.png")));
+
     }
 }

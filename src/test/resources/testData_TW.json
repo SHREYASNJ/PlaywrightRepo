@@ -5,6 +5,13 @@
     "Activity": "FAMS",
     "Title": "TenderWizard",
     "Home_Page_Title": "Home | NMDC",
-    "MenuName": "Facilities"
+    "MenuName": "Facilities",
+    "Module_Name": "Govt Facilities",
+    "Property_Value": "Guest House",
+    "PropName": "Guest House 1",
+    "Region_Name": "Donimalai",
+    "SectorName": "Bangalore",
+    "IndianState":"Karnataka",
+    "LocationName":"Bangalore Vijaynagar"
   }
 ]
