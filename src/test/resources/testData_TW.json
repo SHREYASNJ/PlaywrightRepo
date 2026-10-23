@@ -12,6 +12,17 @@
     "Region_Name": "Donimalai",
     "SectorName": "Bangalore",
     "IndianState":"Karnataka",
-    "LocationName":"Bangalore Vijaynagar"
+    "LocationName":"Bangalore Vijaynagar",
+    "GH_InchargeName": "SHREYAS",
+    "ContactValue": "740679001",
+    "auxArea_Value": "2400",
+    "DescriptionValue":"Test Guest House Bangalore",
+    "PropRegion":"North Region (NR01)",
+    "estate_Name":"Central Estate (EST001) - Delhi",
+    "physicaladdressValue": "Test Guest House Bangalore, Vijaynagar, Bangalore, Karnataka",
+    "Block": "Vijaynagar",
+    "Code": "Attiguppe",
+    "Number_of_Floors": "3",
+    "room_Number": "100"
   }
 ]

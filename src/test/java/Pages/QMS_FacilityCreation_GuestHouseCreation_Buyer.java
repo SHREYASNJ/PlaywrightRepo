@@ -5,30 +5,49 @@ import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.AriaRole;
 import com.microsoft.playwright.options.SelectOption;
 import org.testng.Assert;
+import com.microsoft.playwright.Dialog;
+import org.testng.Assert;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 
-public class QMS_FacilityCreation_GuestHouseCreation_Buyer
-{
+public class QMS_FacilityCreation_GuestHouseCreation_Buyer {
     Page page;
-    private static final String AddNewPropertyButton ="Add New Property";
-    private static final String Header ="Create New Property";
-    private static final String ModuleDP ="#module-select";
-    private static final String Property_Type="#property-type-select";
-    private static final String prop_Name="#property-name";
+    private static final String AddNewPropertyButton = "Add New Property";
+    private static final String Header = "Create New Property";
+    private static final String ModuleDP = "#module-select";
+    private static final String Property_Type = "#property-type-select";
+    private static final String prop_Name = "#property-name";
     private static final String RegionDP = "select[name='regionId']";
-    private static final String Sector="e.g., Sector 2";
-    private static final String state="#state-select";
-    private static final String LocationPlaceholder="e.g., Near SBI bank, opp KV school";
+    private static final String Sector = "e.g., Sector 2";
+    private static final String state = "#state-select";
+    private static final String LocationPlaceholder = "e.g., Near SBI bank, opp KV school";
+    private static final String Incharge_Name = "#hallInchargeName";
+    private static final String Contact_Details = "#hallContactDetails";
+    private static final String Auxiliary_Area = "#hallAuxiliaryArea";
+    private static final String Description = "Provide a brief description of this property";
+    private static final String save_Button = "#btnSaveDraft";
+    private static final String prop_Region = "#property-region-select";
+    private static final String estate = "#property-estate-select";
+    private static final String physicaladdressPlaceholder = "Enter complete address with landmarks...";
+    private static final String add_Block_Button ="#btn-add-block";
+    private static final String blocknamePlaceholder ="e.g., Main Block";
+    private static final String blockcodePlaceholder ="e.g., BLK-A";
+    private static final String Floors ="input[name='blockFloors_0']";
+    private static final String BlockName1 = "select[name='roomBlockId_0']";
+    private static final String OptionValue ="option";
+    private static final String floorValue ="select[name='roomFloor_0']";
+    private static final String Room_Numbers="e.g., 101";
+    private static final String rmType="select[name='roomTypeId_0']";
+    private static final String rmPrice="select[name='roomPrice_0']";
 
 
-    public QMS_FacilityCreation_GuestHouseCreation_Buyer(Page page)
-    {
-        this.page=page;
+
+
+    public QMS_FacilityCreation_GuestHouseCreation_Buyer(Page page) {
+        this.page = page;
     }
 
-    public void GuestHouse_AddProperty()
-    {
+    public void GuestHouse_AddProperty() {
         page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions()
                 .setName(AddNewPropertyButton)).click();
         Locator createPropLabel = page.getByRole(
@@ -37,10 +56,12 @@ public class QMS_FacilityCreation_GuestHouseCreation_Buyer
         );
         assertThat(createPropLabel).hasText(Header);
     }
+
     public void Create_GeneralInfo(String Module_Name, String Property_Value
-            , String PropName, String Region_Name, String SectorName, String IndianState, String LocationName)
-    {
-        Locator Module= page.locator(ModuleDP);
+            , String PropName, String Region_Name, String SectorName, String IndianState
+            , String LocationName, String GH_InchargeName, String ContactValue, String auxArea_Value
+            , String DescriptionValue) {
+        Locator Module = page.locator(ModuleDP);
         Module.selectOption(new SelectOption().setLabel(Module_Name));
         assertThat(Module.locator("option:checked"))
                 .hasText(Module_Name);
@@ -73,10 +94,147 @@ public class QMS_FacilityCreation_GuestHouseCreation_Buyer
         assertThat(stateName.locator("option:checked"))
                 .hasText(IndianState);
 
-        Locator locationName= page.getByPlaceholder(LocationPlaceholder);
+        Locator locationName = page.getByPlaceholder(LocationPlaceholder);
         locationName.scrollIntoViewIfNeeded();
         locationName.fill(LocationName);
         assertThat(locationName).hasValue(LocationName);
+
+        Locator inchargeName = page.locator(Incharge_Name);
+        inchargeName.scrollIntoViewIfNeeded();
+        inchargeName.fill(GH_InchargeName);
+        assertThat(inchargeName).hasValue(GH_InchargeName);
+
+        Locator Contact = page.locator(Contact_Details);
+        Contact.scrollIntoViewIfNeeded();
+        Contact.fill(ContactValue);
+        assertThat(Contact).hasValue(ContactValue);
+
+        Locator aux_Area = page.locator(Auxiliary_Area);
+        aux_Area.scrollIntoViewIfNeeded();
+        aux_Area.fill(auxArea_Value);
+        assertThat(Contact).hasValue(auxArea_Value);
+
+        Locator desc = page.getByPlaceholder(Description);
+        desc.scrollIntoViewIfNeeded();
+        desc.fill(DescriptionValue);
+        assertThat(desc).hasValue(DescriptionValue);
+
+        page.evaluate("window.scrollTo(0, 0)");
+        Locator saveBttn = page.locator(save_Button);
+        assertThat(saveBttn).isVisible();
+        assertThat(saveBttn).isEnabled();
+        saveBttn.click();
+
+        page.onceDialog(dialog -> {
+            Assert.assertEquals(
+                    dialog.message(),
+                    "Property created successfully.",
+                    "Alert message validation failed"
+            );
+            dialog.accept();
+        });
+    }
+
+    public void Create_Location_Details(String PropRegion, String estate_Name, String physicaladdressValue) {
+        Locator regionSelect = page.locator(prop_Region);
+        regionSelect.selectOption(new SelectOption().setLabel(PropRegion));
+        assertThat(regionSelect.locator("option:checked"))
+                .hasText(PropRegion);
+
+        Locator prop_estate = page.locator(estate);
+        prop_estate.selectOption(new SelectOption().setLabel(estate_Name));
+        assertThat(prop_estate.locator("option:checked"))
+                .hasText(estate_Name);
+
+        Locator physicalAddress = page.getByPlaceholder(physicaladdressPlaceholder);
+        physicalAddress.fill(physicaladdressValue);
+
+        page.evaluate("window.scrollTo(0, 0)");
+        Locator saveBttn = page.locator(save_Button);
+        assertThat(saveBttn).isVisible();
+        assertThat(saveBttn).isEnabled();
+        saveBttn.click();
+
+        page.onceDialog(dialog -> {
+            Assert.assertEquals(
+                    dialog.message(),
+                    "Property updated successfully.",
+                    "Alert message validation failed"
+            );
+            dialog.accept();
+        });
+    }
+
+    public void Create_Blocks_Floors_Structure(String Block, String Code
+            , String Number_of_Floors)
+    {
+     Locator addBlock=page.locator(add_Block_Button);
+        addBlock.click();
+
+        Locator blockName=page.getByPlaceholder(blocknamePlaceholder);
+        blockName.fill(Block);
+        assertThat(blockName).hasValue(Block);
+
+        Locator blockCode=page.getByPlaceholder(blockcodePlaceholder);
+        blockCode.fill(Code);
+        assertThat(blockCode).hasValue(Code);
+
+        Locator Numberof_Floors= page.locator(Floors);
+        Numberof_Floors.fill(Number_of_Floors);
+        assertThat(Numberof_Floors).hasValue(Number_of_Floors);
+
+        page.evaluate("window.scrollTo(0, 0)");
+        Locator saveBttn = page.locator(save_Button);
+        assertThat(saveBttn).isVisible();
+        assertThat(saveBttn).isEnabled();
+        saveBttn.click();
+
+        page.onceDialog(dialog -> {
+            Assert.assertEquals(
+                    dialog.message(),
+                    "Property updated successfully.",
+                    "Alert message validation failed"
+            );
+            dialog.accept();
+        });
+    }
+    public void Create_Rooms(String Block, String Code
+            , String Number_of_Floors, String room_Number, String room_Type, String room_Price)
+    {
+      Locator BlockName= page.locator(BlockName1);
+        String blockValue = BlockName.locator(OptionValue)
+                .nth(1)
+                .textContent()
+                .trim();
+        BlockName.selectOption(new SelectOption().setLabel(blockValue));
+        assertThat(BlockName).hasValue(blockValue);
+
+        Locator floorName=page.locator(floorValue);
+        String floorValue = floorName.locator(OptionValue)
+                .nth(1)
+                .textContent()
+                .trim();
+        floorName.selectOption(new SelectOption().setLabel(floorValue));
+        assertThat(floorName).hasValue(floorValue);
+
+       Locator roomNumber= page.getByPlaceholder(Room_Numbers);
+        roomNumber.fill(room_Number);
+        assertThat(roomNumber).hasValue(room_Number);
+
+        Locator type= page.locator(rmType);
+        type.selectOption(new SelectOption().setLabel(room_Type));
+        assertThat(type.locator("option:checked"))
+                .hasText(room_Type);
+
+        Locator roomPrice=page.locator(rmPrice);
+        roomPrice.fill(room_Price);
+        assertThat(roomPrice).hasValue(room_Price);
+
+
+
+
+
+
 
 
 
