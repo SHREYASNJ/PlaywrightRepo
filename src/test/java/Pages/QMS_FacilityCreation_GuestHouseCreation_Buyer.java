@@ -8,6 +8,8 @@ import org.testng.Assert;
 import com.microsoft.playwright.Dialog;
 import org.testng.Assert;
 
+import java.nio.file.Paths;
+
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 
 public class QMS_FacilityCreation_GuestHouseCreation_Buyer {
@@ -39,7 +41,15 @@ public class QMS_FacilityCreation_GuestHouseCreation_Buyer {
     private static final String Room_Numbers="e.g., 101";
     private static final String rmType="select[name='roomTypeId_0']";
     private static final String rmPrice="select[name='roomPrice_0']";
-
+    private static final String bedCount ="input[name='bedCount_0']";
+    private static final String Bed_Type="#bed-type-select";
+    private static final String Room_View="button[data-pill-value='courtyard_view']";
+    private static final String Policies="button[data-pill-value='smoking_allowed']";
+    private static final String Quick_Features="button[data-feature='balcony']";
+    private static final String UploadphotoSelector ="#textfield10basic";
+    private static final String amenityID="input[name='amenityIds']";
+    private static final String PubProp="Publish Property";
+    private static final String AvalProp="Available for booking";
 
 
 
@@ -60,7 +70,12 @@ public class QMS_FacilityCreation_GuestHouseCreation_Buyer {
     public void Create_GeneralInfo(String Module_Name, String Property_Value
             , String PropName, String Region_Name, String SectorName, String IndianState
             , String LocationName, String GH_InchargeName, String ContactValue, String auxArea_Value
-            , String DescriptionValue) {
+            , String DescriptionValue)
+    {
+        Locator GeneralInfo = page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions()
+                .setName("1. General Info"));
+        GeneralInfo.click();
+
         Locator Module = page.locator(ModuleDP);
         Module.selectOption(new SelectOption().setLabel(Module_Name));
         assertThat(Module.locator("option:checked"))
@@ -135,7 +150,13 @@ public class QMS_FacilityCreation_GuestHouseCreation_Buyer {
         });
     }
 
-    public void Create_Location_Details(String PropRegion, String estate_Name, String physicaladdressValue) {
+    public void Create_Location_Details(String PropRegion, String estate_Name,
+                                        String physicaladdressValue)
+    {
+        Locator Location_Details = page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions()
+                .setName("2. Location"));
+        Location_Details.click();
+
         Locator regionSelect = page.locator(prop_Region);
         regionSelect.selectOption(new SelectOption().setLabel(PropRegion));
         assertThat(regionSelect.locator("option:checked"))
@@ -168,6 +189,10 @@ public class QMS_FacilityCreation_GuestHouseCreation_Buyer {
     public void Create_Blocks_Floors_Structure(String Block, String Code
             , String Number_of_Floors)
     {
+        Locator Blocks_Floors = page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions()
+                .setName("3. Blocks & Floors"));
+        Blocks_Floors.click();
+
      Locator addBlock=page.locator(add_Block_Button);
         addBlock.click();
 
@@ -199,9 +224,14 @@ public class QMS_FacilityCreation_GuestHouseCreation_Buyer {
         });
     }
     public void Create_Rooms(String Block, String Code
-            , String Number_of_Floors, String room_Number, String room_Type, String room_Price)
+            , String Number_of_Floors, String room_Number, String room_Type, String room_Price,
+                             String Bed_Value)
     {
-      Locator BlockName= page.locator(BlockName1);
+        Locator Rooms_Select = page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions()
+                .setName("4. Rooms"));
+        Rooms_Select.click();
+
+        Locator BlockName= page.locator(BlockName1);
         String blockValue = BlockName.locator(OptionValue)
                 .nth(1)
                 .textContent()
@@ -230,14 +260,113 @@ public class QMS_FacilityCreation_GuestHouseCreation_Buyer {
         roomPrice.fill(room_Price);
         assertThat(roomPrice).hasValue(room_Price);
 
+        Locator bed_Count=page.locator(bedCount);
+        bed_Count.scrollIntoViewIfNeeded();
+        bed_Count.fill(Bed_Value);
+        assertThat(bed_Count).hasValue(Bed_Value);
 
+        Locator bedType = page.locator(Bed_Type);
+        bedType.selectOption(new SelectOption().setLabel("Double"));
+        assertThat(bedType.locator("option:checked"))
+                .hasText("Double");
 
+        Locator courtyardView = page.locator(Room_View).first();
+        courtyardView.scrollIntoViewIfNeeded();
+        courtyardView.click();
 
+        Locator Smoking = page.locator(Policies).first();
+        Smoking.scrollIntoViewIfNeeded();
+        Smoking.click();
 
+        Locator quickFeature = page.locator(Quick_Features).first();
+        quickFeature.scrollIntoViewIfNeeded();
+        quickFeature.click();
 
+        page.evaluate("window.scrollTo(0,0)");
+        Locator saveBttn = page.locator(save_Button);
+        assertThat(saveBttn).isVisible();
+        assertThat(saveBttn).isEnabled();
+        saveBttn.click();
 
-
-
-
+        page.onceDialog(dialog -> {
+            Assert.assertEquals(
+                    dialog.message(),
+                    "Property updated successfully.",
+                    "Alert message validation failed"
+            );
+            dialog.accept();
+        });
     }
-}
+
+    public void Upload_Images()
+    {
+        Locator Images = page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions()
+                .setName("5. Images"));
+        Images.click();
+
+        Locator uploadPhotos = page.locator(UploadphotoSelector);
+
+        uploadPhotos.setInputFiles(new java.nio.file.Path[] {
+                Paths.get("C:\\Users\\shreyasn\\Downloads\\HOUSE\\PROPERTYPHOTO1.jpg"),
+                Paths.get("C:\\Users\\shreyasn\\Downloads\\HOUSE\\PROPERTYPHOTO2.jpg"),
+        });
+
+        page.evaluate("window.scrollTo(0,0)");
+        Locator saveBttn = page.locator(save_Button);
+        assertThat(saveBttn).isVisible();
+        assertThat(saveBttn).isEnabled();
+        saveBttn.click();
+
+        page.onceDialog(dialog -> {
+            Assert.assertEquals(
+                    dialog.message(),
+                    "Property updated successfully.",
+                    "Alert message validation failed"
+            );
+            dialog.accept();
+        });
+    }
+
+    public void Create_pricing() {
+        Locator Pricing = page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions()
+                .setName("6. Pricing"));
+        Pricing.click();
+
+       Locator Property_Amenities = page.locator(amenityID);
+        Property_Amenities.first().scrollIntoViewIfNeeded();
+
+        for (int i = 0; i < Property_Amenities.count(); i++)
+        {
+            Property_Amenities.nth(i).check();
+        }
+        page.evaluate("window.scrollTo(0,0)");
+        Locator saveBttn = page.locator(save_Button);
+        assertThat(saveBttn).isVisible();
+        assertThat(saveBttn).isEnabled();
+        saveBttn.click();
+
+        page.onceDialog(dialog -> {
+            Assert.assertEquals(
+                    dialog.message(),
+                    "Property updated successfully.",
+                    "Alert message validation failed"
+            );
+            dialog.accept();
+        });
+    }
+    public void Publish_Property()
+    {
+        page.evaluate("window.scrollTo(0,0)");
+        Locator Publish_Button = page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions()
+                .setName(PubProp));
+        assertThat(Publish_Button).isVisible();
+        assertThat(Publish_Button).isEnabled();
+        Publish_Button.click();
+
+        //Locator Publish_Button = page.locator("#btnPublish");
+        //Publish_Button.click();
+
+        Locator PropAvailablelabelname=page.getByText(AvalProp);
+        assertThat(PropAvailablelabelname).isVisible();
+    }
+    }
