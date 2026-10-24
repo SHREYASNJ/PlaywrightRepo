@@ -50,8 +50,7 @@ public class QMS_FacilityCreation_GuestHouseCreation_Buyer {
     private static final String amenityID="input[name='amenityIds']";
     private static final String PubProp="Publish Property";
     private static final String AvalProp="Available for booking";
-
-
+    private static final String searchprop="#quarterSearchInput";
 
     public QMS_FacilityCreation_GuestHouseCreation_Buyer(Page page) {
         this.page = page;
@@ -153,6 +152,7 @@ public class QMS_FacilityCreation_GuestHouseCreation_Buyer {
     public void Create_Location_Details(String PropRegion, String estate_Name,
                                         String physicaladdressValue)
     {
+        page.evaluate("window.scrollTo(0, 0)");
         Locator Location_Details = page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions()
                 .setName("2. Location"));
         Location_Details.click();
@@ -189,6 +189,7 @@ public class QMS_FacilityCreation_GuestHouseCreation_Buyer {
     public void Create_Blocks_Floors_Structure(String Block, String Code
             , String Number_of_Floors)
     {
+        page.evaluate("window.scrollTo(0, 0)");
         Locator Blocks_Floors = page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions()
                 .setName("3. Blocks & Floors"));
         Blocks_Floors.click();
@@ -227,6 +228,7 @@ public class QMS_FacilityCreation_GuestHouseCreation_Buyer {
             , String Number_of_Floors, String room_Number, String room_Type, String room_Price,
                              String Bed_Value)
     {
+        page.evaluate("window.scrollTo(0, 0)");
         Locator Rooms_Select = page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions()
                 .setName("4. Rooms"));
         Rooms_Select.click();
@@ -300,6 +302,7 @@ public class QMS_FacilityCreation_GuestHouseCreation_Buyer {
 
     public void Upload_Images()
     {
+        page.evaluate("window.scrollTo(0, 0)");
         Locator Images = page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions()
                 .setName("5. Images"));
         Images.click();
@@ -327,7 +330,9 @@ public class QMS_FacilityCreation_GuestHouseCreation_Buyer {
         });
     }
 
-    public void Create_pricing() {
+    public void Create_pricing()
+    {
+        page.evaluate("window.scrollTo(0, 0)");
         Locator Pricing = page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions()
                 .setName("6. Pricing"));
         Pricing.click();
@@ -354,7 +359,7 @@ public class QMS_FacilityCreation_GuestHouseCreation_Buyer {
             dialog.accept();
         });
     }
-    public void Publish_Property()
+    public void Publish_Property(String PropName)
     {
         page.evaluate("window.scrollTo(0,0)");
         Locator Publish_Button = page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions()
@@ -365,6 +370,9 @@ public class QMS_FacilityCreation_GuestHouseCreation_Buyer {
 
         //Locator Publish_Button = page.locator("#btnPublish");
         //Publish_Button.click();
+
+        Locator search=page.locator(searchprop);
+        search.fill(PropName);
 
         Locator PropAvailablelabelname=page.getByText(AvalProp);
         assertThat(PropAvailablelabelname).isVisible();
