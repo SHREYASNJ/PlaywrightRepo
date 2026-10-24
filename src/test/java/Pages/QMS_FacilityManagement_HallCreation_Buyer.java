@@ -34,6 +34,14 @@ public class QMS_FacilityManagement_HallCreation_Buyer
     private static final String PubProp="Publish Property";
     private static final String AvalProp="Available for booking";
     private static final String searchprop="#quarterSearchInput";
+    private static final String mh_seating="e.g., 500";
+    private static final String Din_Capacity="e.g., 200";
+    private static final String guestRoomPlaceholder="e.g., 5";
+    private static final String ac_RoomPlaceHolder="e.g., 2";
+    private static final String nonac_RoomPlaceHolder="e.g., 3";
+    private static final String twowheelerParking="e.g., 100";
+    private static final String fourwheelerParkingPlaceholder="e.g., 50";
+    private static final String kitchensizePlaceholder="e.g., 500";
 
     public QMS_FacilityManagement_HallCreation_Buyer()
     {
@@ -171,7 +179,12 @@ public class QMS_FacilityManagement_HallCreation_Buyer
             dialog.accept();
         });
     }
-public void Create_HALL_Details()
+public void Create_HALL_Details(String hallseatingValue, String DininghallseatingValue,
+                                String guestroomsValue, String acRoomsValue,
+                                String nonacRoomsValue, String twowheelerparkingValue,
+                                String fourwheelerparkingValue, String kitchensizeValue,
+                                String rowText, String amount
+                                )
 {
     page.evaluate("window.scrollTo(0, 0)");
     Locator HallDetails = page.getByRole(AriaRole.BUTTON,
@@ -179,6 +192,104 @@ public void Create_HALL_Details()
                     .setName("3. Hall Details"));
     HallDetails.click();
 
+    Locator Main_Hall_Seating =page.getByPlaceholder(mh_seating);
+    Main_Hall_Seating.clear();
+    Main_Hall_Seating.fill(hallseatingValue);
+    assertThat(Main_Hall_Seating).hasValue(hallseatingValue);
+
+    Locator Dining_Hall_Seating =page.getByPlaceholder(Din_Capacity);
+    Dining_Hall_Seating.clear();
+    Dining_Hall_Seating.fill(DininghallseatingValue);
+    assertThat(Dining_Hall_Seating).hasValue(DininghallseatingValue);
+
+    Locator guestRoom =page.getByPlaceholder(guestRoomPlaceholder);
+    guestRoom.clear();
+    guestRoom.fill(guestroomsValue);
+    assertThat(guestRoom).hasValue(guestroomsValue);
+
+    Locator acRoom =page.getByPlaceholder(ac_RoomPlaceHolder);
+    acRoom.clear();
+    acRoom.fill(acRoomsValue);
+    assertThat(acRoom).hasValue(acRoomsValue);
+
+    Locator nonacRoom =page.getByPlaceholder(nonac_RoomPlaceHolder);
+    nonacRoom.clear();
+    nonacRoom.fill(nonacRoomsValue);
+    assertThat(nonacRoom).hasValue(nonacRoomsValue);
+
+    Locator two_wheeler_parking =page.getByPlaceholder(twowheelerParking);
+    two_wheeler_parking.clear();
+    two_wheeler_parking.fill(twowheelerparkingValue);
+    assertThat(two_wheeler_parking).hasValue(twowheelerparkingValue);
+
+    Locator four_wheeler_parking =page.getByPlaceholder(fourwheelerParkingPlaceholder);
+    four_wheeler_parking.scrollIntoViewIfNeeded();
+    four_wheeler_parking.clear();
+    four_wheeler_parking.fill(fourwheelerparkingValue);
+    assertThat(four_wheeler_parking).hasValue(fourwheelerparkingValue);
+
+    Locator kitchensize_parking =page.getByPlaceholder(kitchensizePlaceholder);
+    kitchensize_parking.scrollIntoViewIfNeeded();
+    kitchensize_parking.clear();
+    kitchensize_parking.fill(kitchensizeValue);
+    assertThat(kitchensize_parking).hasValue(kitchensizeValue);
+
+    //Below can also be used to enter amount
+    //Locator AmountField = page.getByRole(AriaRole.SPINBUTTON,new Page.GetByRoleOptions().setName("Enter Amount"));
+    //AmountField.nth(0).fill("10");
+    //AmountField.nth(1).fill("20");
+
+    fill_amount("Base Hall Rent (NMDC Employee)","10");
+    fill_amount("Base Hall Rent (Non-NMDC Employee)","20");
+    fill_amount("Music Charges (NMDC Employee)","10");
+    fill_amount("Music Charges (Non-NMDC Employee)","20");
+    fill_amount("Hall Rent (NMDC Employee)","10");
+    fill_amount("Hall Rent (Non-NMDC Employee)","20");
+    fill_amount("Water Utility Fee","10");
+    fill_amount("Electricity Charges","10");
+    fill_amount("Security Deposit (NMDC Employee)","100");
+    fill_amount("Security Deposit (Non-NMDC Employee)","150");
+    fill_amount("Lighting Charges","10");
+    fill_amount("Gas Charges","10");
+    fill_amount("Damage Recovery Policy","10");
+    fill_amount("Operating Time & Noise Policy","10");
+    fill_amount("Cleaning Charges","10");
+    fill_amount("GST Applicable %","18");
+
+    Locator musicSystem = page.getByRole(
+            AriaRole.CHECKBOX,
+            new Page.GetByRoleOptions().setName("Music System")
+    );
+    musicSystem.scrollIntoViewIfNeeded();
+    musicSystem.check();
+
+    Locator waterSupply = page.getByRole(
+            AriaRole.CHECKBOX,
+            new Page.GetByRoleOptions().setName("Water Supply")
+    );
+    waterSupply.scrollIntoViewIfNeeded();
+    waterSupply.check();
+
+}
+
+public void fill_amount(String rowText, String amount)
+{
+    Locator row = page.locator("tr")
+            .filter(new Locator.FilterOptions().setHasText(rowText));
+
+    // Verify that exactly one row matches
+    assertThat(row).hasCount(1);
+
+    Locator amountField = row.getByRole(
+            AriaRole.SPINBUTTON,
+            new Locator.GetByRoleOptions().setName("Enter Amount")
+    );
+
+    // Verify that exactly one amount field exists in the row
+    assertThat(amountField).hasCount(1);
+
+    amountField.scrollIntoViewIfNeeded();
+    amountField.fill(amount);
 }
     public void Upload_Images()
     {

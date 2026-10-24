@@ -25,6 +25,14 @@
     "Block": "Vijaynagar",
     "Code": "Attiguppe",
     "Number_of_Floors": "3",
-    "room_Number": "100"
+    "room_Number": "100",
+    "hallseatingValue": "500",
+    "DininghallseatingValue": "200",
+    "nonacRoomsValue": "2",
+    "acRoomsValue": "3",
+    "guestroomsValue": "5",
+    "twowheelerparkingValue": "100"
+
+
   }
 ]
