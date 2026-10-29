@@ -9,4 +9,8 @@ public class QMS_FacilityRequest_Employee
     {
         this.page=page;
     }
+    public void hall_Request_EO(String Property_Value1)
+    {
+
+    }
 }

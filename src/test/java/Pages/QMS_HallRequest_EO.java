@@ -1,15 +1,17 @@
 package Pages;
 
+import com.microsoft.playwright.FrameLocator;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.AriaRole;
+import com.microsoft.playwright.options.SelectOption;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 
-public class QMS_FacilityRequest_EO
+public class QMS_HallRequest_EO
 {
     Page page;
-    public QMS_FacilityRequest_EO(Page page)
+    public QMS_HallRequest_EO(Page page)
     {
         this.page=page;
     }
@@ -36,9 +38,11 @@ public class QMS_FacilityRequest_EO
   private static final String tp_remarksvalue="Third Party Booking";
   private static final String tp_terms_clickHere="Click Here";
   private static final String conf_Booking="#bookingbtn";
+  private static final String conf_BookingCB="#TermsandConditionsCheckThirdParty";
 
 
-  public void hall_Request(String Property_Value1,String tpempname_Value1,
+
+  public void hall_Request_EO(String Property_Value1,String tpempname_Value1,
                            String tpempMobilenumb_Value1, String tpempemail_Value1,
                            String tp_Designation, String tp_organisation,
                            String tp_specDescrption, String checkinDate,
@@ -133,11 +137,36 @@ public class QMS_FacilityRequest_EO
       assertThat(closeTerms).isEnabled();
       closeTerms.click();
 
+      Locator closeTerms_checkBox=bookingModal.locator(conf_BookingCB);
+      closeTerms_checkBox.scrollIntoViewIfNeeded();
+      assertThat(closeTerms_checkBox).isVisible();
+      assertThat(closeTerms_checkBox).isEnabled();
+      closeTerms_checkBox.click();
+
       Locator confirm_Booking=bookingModal.locator(conf_Booking);
       confirm_Booking.scrollIntoViewIfNeeded();
       assertThat(confirm_Booking).isVisible();
       assertThat(confirm_Booking).isEnabled();
       confirm_Booking.click();
+
+      FrameLocator alertFrame = page.frameLocator("iframe");
+      Locator OkButton = alertFrame.getByRole(AriaRole.BUTTON,
+              new FrameLocator.GetByRoleOptions()
+              .setName("OK"));
+      assertThat(OkButton).isVisible();
+      OkButton.click();
+
+      Locator TransTypeselect=page.locator("#transType");
+      TransTypeselect.selectOption(new SelectOption().setLabel("Property SD Fee1"));
+      assertThat(TransTypeselect.locator("option:checked"))
+              .hasText("Property SD Fee1");
+
+      Locator modeSelect=page.locator("#mode");
+      modeSelect.selectOption(new SelectOption().setLabel("DD"));
+      assertThat(modeSelect.locator("option:checked"))
+              .hasText("DD");
+
+
 
     }
 }
