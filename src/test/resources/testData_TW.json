@@ -31,7 +31,12 @@
     "nonacRoomsValue": "2",
     "acRoomsValue": "3",
     "guestroomsValue": "5",
-    "twowheelerparkingValue": "100"
-
+    "twowheelerparkingValue": "100",
+    "tpempname_Value1": "SHREYAS NJ",
+    "tpempMobilenumb_Value1": "7406719001",
+    "tpempemail_Value1": "shreyasbit13@gmail.com",
+    "tp_Designation": "Sr Test Engineer",
+    "tp_organisation": "ANTARES",
+    "tp_specDescrption": "TEST REQUEST"
   }
 ]
