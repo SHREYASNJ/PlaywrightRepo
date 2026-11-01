@@ -37,6 +37,32 @@
     "tpempemail_Value1": "shreyasbit13@gmail.com",
     "tp_Designation": "Sr Test Engineer",
     "tp_organisation": "ANTARES",
-    "tp_specDescrption": "TEST REQUEST"
+    "tp_specDescrption": "TEST REQUEST",
+    "checkinDate":"30",
+    "checkoutDate":"31",
+    "Trans_Value1": "Property SD Fee1",
+    "Trans_Value2": "",
+    "Pay_mode": "DD",
+    "Payment_Date":"30",
+    "ddNum":"12345",
+    "ddBran":"Bangalore",
+    "ddRem":"TESTPAYMENT",
+    "Bank_Name": "Abu Dhabi Commercial Bank",
+    "statusPayment": "PAID",
+    "ddN": "12345678",
+    "ddB": "BANGALORE",
+    "ddRm": "TEST PAYMENT",
+    "instru_Date": "25",
+    "VendorID": "NMDC_EMPL580",
+    "passwordVend":"Secure!@#1",
+    "Adult":"2",
+    "Children":"1",
+    "SpeciDescription":"Test Request from Employee",
+    "proptypedrpDown":"Standard (cap:2)",
+    "number_of_Rooms": "1",
+    "booking_Prop_Remarks": "Pay Now Booking by Employee",
+    "transtype_Value": "PBF",
+    "transMode_Value": "1"
+
   }
 ]

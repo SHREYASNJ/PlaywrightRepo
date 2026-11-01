@@ -22,7 +22,8 @@ public class LoginPage
         this.page= page;
     }
 
-    public void Login_Page(String UN, String PW, String Activity, String PageTitle)
+    public void Login_Page(String UN, String PW,
+                           String Activity, String PageTitle)
     {
         System.out.println(page.title());
         assertThat(page).hasTitle(PageTitle);
@@ -31,6 +32,21 @@ public class LoginPage
 
         frame.getByPlaceholder(username_placeholder).fill(UN);
         frame.getByPlaceholder(password_placeholder).fill(PW);
+        frame.locator(activity).selectOption(new SelectOption().setLabel(Activity));
+        frame.getByRole(AriaRole.BUTTON, new FrameLocator.GetByRoleOptions().setName("Login")).click();
+        page.screenshot(new Page.ScreenshotOptions().setPath(Paths.get("pagescreenshot.png")));
+
+    }
+    public void Login_Page_Vendor(String VendorID, String passwordVend,
+                                  String Activity, String PageTitle)
+    {
+        System.out.println(page.title());
+        assertThat(page).hasTitle(PageTitle);
+
+        FrameLocator frame = page.frameLocator(".cst-pg032-iframe");
+
+        frame.getByPlaceholder(username_placeholder).fill(VendorID);
+        frame.getByPlaceholder(password_placeholder).fill(passwordVend);
         frame.locator(activity).selectOption(new SelectOption().setLabel(Activity));
         frame.getByRole(AriaRole.BUTTON, new FrameLocator.GetByRoleOptions().setName("Login")).click();
         page.screenshot(new Page.ScreenshotOptions().setPath(Paths.get("pagescreenshot.png")));

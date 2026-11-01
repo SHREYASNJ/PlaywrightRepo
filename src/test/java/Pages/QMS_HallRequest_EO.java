@@ -39,15 +39,32 @@ public class QMS_HallRequest_EO
   private static final String tp_terms_clickHere="Click Here";
   private static final String conf_Booking="#bookingbtn";
   private static final String conf_BookingCB="#TermsandConditionsCheckThirdParty";
+  private static final String i_Frame="iframe";
+  private static final String ok_Button="OK";
+  private static final String transaction_Type="#transType";
+  private static final String trans_Mode="#mode";
+  private static final String dd_Number="#sInstrumentNumber";
+  private static final String dd_Branch="#sInstrumentBranch";
+  private static final String dd_Remarks="#sInstrumentRemarks";
+  private static final String instrument_Date="#sInstrumentDate";
+  private static final String Instrument_Bank="#sInstrumentBank";
+  private static final String up_Button="input[value='Update']";
+  private static final String pay_Status="td.ellipsis";
+  private static final String close_Pay ="button[onclick='closePayment()']";
+  private static final String subm_Bttn ="div[data-metric-title='SUBMITTED']";
 
-
-
-  public void hall_Request_EO(String Property_Value1,String tpempname_Value1,
+  public void thirdpartyhallRequest_EO(String Property_Value1,String tpempname_Value1,
                            String tpempMobilenumb_Value1, String tpempemail_Value1,
                            String tp_Designation, String tp_organisation,
                            String tp_specDescrption, String checkinDate,
-                           String checkoutDate
-                           )
+                           String checkoutDate, String Trans_Value1,
+                              String Trans_Value2, String Pay_mode,
+                              String Payment_Date, String ddNum, String ddBran,
+                              String ddRem, String Bank_Name, String statusPayment,
+                              String ddN, String ddB, String ddRm,
+                              String instru_Date
+
+  )
     {
       Locator search = page.locator(searchProp);
         assertThat(search).isVisible();
@@ -89,29 +106,36 @@ public class QMS_HallRequest_EO
         organisation.fill(tp_organisation);
         Locator specialDescr = bookingModal.locator(tpspecdesc);
         specialDescr.fill(tp_specDescrption);
+
         // Check-in date
-        Locator checkIn = bookingModal.locator(tpcheckIN);
-        // Open the calendar
-        checkIn.scrollIntoViewIfNeeded();
-        assertThat(checkIn).isVisible();
-      assertThat(checkIn).isEnabled();
+      Locator checkIn = bookingModal.locator(tpcheckIN);
+      checkIn.scrollIntoViewIfNeeded();
+      assertThat(checkIn).isVisible();
       checkIn.click();
 
-      // Select date from the calendar
-        bookingModal.locator(calender)
-                .filter(new Locator.FilterOptions().setHasText(checkinDate))
-                .click();
-      // Check-in date
+      Locator checkInDate = bookingModal.locator(calender)
+              .getByRole(AriaRole.LINK,
+                      new Locator.GetByRoleOptions()
+                              .setName(checkinDate)
+                              .setExact(true));
+
+      assertThat(checkInDate).isVisible();
+      checkInDate.click();
+
+      // Check-out date
       Locator checkOut = bookingModal.locator(tp_checkOut);
-      // Open the calendar
       checkOut.scrollIntoViewIfNeeded();
       assertThat(checkOut).isVisible();
-      assertThat(checkOut).isEnabled();
       checkOut.click();
-      // Select date from the calendar
-      bookingModal.locator(calender)
-              .filter(new Locator.FilterOptions().setHasText(checkoutDate))
-              .click();
+
+      Locator checkOutDate = bookingModal.locator(calender)
+              .getByRole(AriaRole.LINK,
+                      new Locator.GetByRoleOptions()
+                              .setName(checkoutDate)
+                              .setExact(true));
+
+      assertThat(checkOutDate).isVisible();
+      checkOutDate.click();
 
       Locator payNow=bookingModal.getByRole(AriaRole.BUTTON,
               new Locator.GetByRoleOptions()
@@ -149,24 +173,128 @@ public class QMS_HallRequest_EO
       assertThat(confirm_Booking).isEnabled();
       confirm_Booking.click();
 
-      FrameLocator alertFrame = page.frameLocator("iframe");
+      FrameLocator alertFrame = page.frameLocator(i_Frame);
       Locator OkButton = alertFrame.getByRole(AriaRole.BUTTON,
               new FrameLocator.GetByRoleOptions()
-              .setName("OK"));
+              .setName(ok_Button));
       assertThat(OkButton).isVisible();
       OkButton.click();
 
-      Locator TransTypeselect=page.locator("#transType");
-      TransTypeselect.selectOption(new SelectOption().setLabel("Property SD Fee1"));
+      Locator TransTypeselect=page.locator(transaction_Type);
+      TransTypeselect.selectOption(new SelectOption().setLabel(Trans_Value1));
       assertThat(TransTypeselect.locator("option:checked"))
-              .hasText("Property SD Fee1");
+              .hasText(Trans_Value1);
 
-      Locator modeSelect=page.locator("#mode");
-      modeSelect.selectOption(new SelectOption().setLabel("DD"));
+      Locator modeSelect=page.locator(trans_Mode);
+      modeSelect.selectOption(new SelectOption().setLabel(Pay_mode));
       assertThat(modeSelect.locator("option:checked"))
-              .hasText("DD");
+              .hasText(Pay_mode);
 
+      Locator ddNumber=page.locator(dd_Number);
+      assertThat(ddNumber).isVisible();
+      assertThat(ddNumber).isEnabled();
+      ddNumber.fill(ddNum);
 
+      Locator ddBranch=page.locator(dd_Branch);
+      assertThat(ddBranch).isVisible();
+      assertThat(ddBranch).isEnabled();
+      ddBranch.fill(ddBran);
+
+      Locator ddRemarks=page.locator(dd_Remarks);
+      assertThat(ddRemarks).isVisible();
+      assertThat(ddRemarks).isEnabled();
+      ddRemarks.fill(ddRem);
+
+      Locator instrumentDate = page.locator(instrument_Date);
+      assertThat(instrumentDate).isVisible();
+      assertThat(instrumentDate).isEnabled();
+      instrumentDate.click();
+      Locator calendarDate = page.locator(calender)
+              .getByRole(
+                      AriaRole.LINK,
+                      new Locator.GetByRoleOptions()
+                              .setName(Payment_Date)
+                              .setExact(true)
+              );
+
+      assertThat(calendarDate).isVisible();
+      calendarDate.click();
+
+      Locator bank =page.locator(Instrument_Bank);
+      bank.selectOption(new SelectOption().setLabel(Bank_Name));
+      assertThat(bank.locator("option:checked"))
+              .hasText(Bank_Name);
+
+      Locator updatebtton =page.locator(up_Button);
+      assertThat(updatebtton).isVisible();
+      assertThat(updatebtton).isEnabled();
+      updatebtton.click();
+
+      Locator paymentStatus = page.locator(pay_Status)
+              .filter(new Locator.FilterOptions().setHasText(statusPayment));
+      assertThat(paymentStatus).hasCount(2);
+      assertThat(paymentStatus.nth(0)).isVisible();
+      assertThat(paymentStatus.nth(0)).hasText(statusPayment);
+
+      TransTypeselect.selectOption(new SelectOption().setLabel(Trans_Value2));
+      assertThat(TransTypeselect.locator("option:checked"))
+              .hasText(Trans_Value2);
+
+      modeSelect.selectOption(new SelectOption().setLabel(Pay_mode));
+      assertThat(modeSelect.locator("option:checked"))
+              .hasText(Pay_mode);
+
+      assertThat(ddNumber).isVisible();
+      assertThat(ddNumber).isEnabled();
+      ddNumber.fill(ddN);
+
+      assertThat(ddBranch).isVisible();
+      assertThat(ddBranch).isEnabled();
+      ddBranch.fill(ddB);
+
+      assertThat(ddRemarks).isVisible();
+      assertThat(ddRemarks).isEnabled();
+      ddRemarks.fill(ddRm);
+
+      assertThat(instrumentDate).isVisible();
+      assertThat(instrumentDate).isEnabled();
+      instrumentDate.click();
+
+      Locator calendarDate1 = page.locator(calender)
+              .getByRole(AriaRole.LINK,
+                      new Locator.GetByRoleOptions()
+                              .setName(instru_Date)
+                              .setExact(true));
+
+      assertThat(calendarDate1).isVisible();
+      calendarDate1.click();
+
+      bank.selectOption(new SelectOption().setLabel(Bank_Name));
+      assertThat(bank.locator("option:checked"))
+              .hasText(Bank_Name);
+
+      assertThat(updatebtton).isVisible();
+      assertThat(updatebtton).isEnabled();
+      updatebtton.click();
+
+      assertThat(paymentStatus.nth(1)).isVisible();
+      assertThat(paymentStatus.nth(1)).hasText(statusPayment);
+
+      Locator close_payment=page.locator(close_Pay);
+      assertThat(close_payment).isVisible();
+      assertThat(close_payment).isEnabled();
+      close_payment.click();
+
+      Locator submittedCard = page.locator(subm_Bttn);
+      assertThat(submittedCard).isVisible();
+      assertThat(submittedCard).isEnabled();
+      submittedCard.click();
+
+      assertThat(search).isVisible();
+      assertThat(search).isEnabled();
+      search.fill(Property_Value1);
+
+      assertThat(propertyCode).containsText(propcodeText);
 
     }
 }
