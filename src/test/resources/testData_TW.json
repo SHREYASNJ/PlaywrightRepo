@@ -62,7 +62,10 @@
     "number_of_Rooms": "1",
     "booking_Prop_Remarks": "Pay Now Booking by Employee",
     "transtype_Value": "PBF",
-    "transMode_Value": "1"
+    "transMode_Value": "1",
+    "sub_Action": "Earmark / Provision Room",
+    "hall_Value": "HALL",
+    "remarksText": "Earmarked"
 
   }
 ]

@@ -11,12 +11,16 @@ import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertTha
 public class QMS_HallRequest_EO
 {
     Page page;
-    public QMS_HallRequest_EO(Page page)
+  FrameLocator rightFrame;
+
+  public QMS_HallRequest_EO(Page page)
     {
-        this.page=page;
+      this.page=page;
+      this.rightFrame = page.frameLocator(rightframe);
     }
 
     private static final String searchProp="#quarterSearchInput";
+  private static final String rightframe = "iframe[name='right']";
   private static final String propcode="span";
   private static final String propcodeText="Property Code";
   private static final String booknow_Button="Book Now";
@@ -66,24 +70,24 @@ public class QMS_HallRequest_EO
 
   )
     {
-      Locator search = page.locator(searchProp);
+      Locator search = rightFrame.locator(searchProp);
         assertThat(search).isVisible();
         assertThat(search).isEnabled();
         search.fill(Property_Value1);
 
-        Locator propertyCode = page.locator(propcode)
+        Locator propertyCode = rightFrame.locator(propcode)
                 .filter(new Locator.FilterOptions().setHasText(propcodeText));
 
         assertThat(propertyCode).containsText(propcodeText);
 
-        Locator BookNowButton = page.getByRole(
+        Locator BookNowButton = rightFrame.getByRole(
                 AriaRole.BUTTON,
-                new Page.GetByRoleOptions().setName(booknow_Button));
+                new FrameLocator.GetByRoleOptions().setName(booknow_Button));
         assertThat(BookNowButton).isVisible();
         assertThat(BookNowButton).isEnabled();
         BookNowButton.click();
 
-        Locator bookingModal = page.locator(booking);
+        Locator bookingModal = rightFrame.locator(booking);
         assertThat(bookingModal).isVisible();
         assertThat(
                 bookingModal.getByText(bookingProp,
@@ -173,7 +177,7 @@ public class QMS_HallRequest_EO
       assertThat(confirm_Booking).isEnabled();
       confirm_Booking.click();
 
-      FrameLocator alertFrame = page.frameLocator(i_Frame);
+      FrameLocator alertFrame = rightFrame.frameLocator(i_Frame);
       Locator OkButton = alertFrame.getByRole(AriaRole.BUTTON,
               new FrameLocator.GetByRoleOptions()
               .setName(ok_Button));
@@ -297,4 +301,12 @@ public class QMS_HallRequest_EO
       assertThat(propertyCode).containsText(propcodeText);
 
     }
+  public String GetRequestID()
+  {
+    Locator RequestID = page.locator("#VendorRequestId2");
+    assertThat(RequestID).isVisible();
+    String requestID = RequestID.innerText().trim();
+    System.out.println("Request ID: " + requestID);
+    return requestID;
+  }
 }

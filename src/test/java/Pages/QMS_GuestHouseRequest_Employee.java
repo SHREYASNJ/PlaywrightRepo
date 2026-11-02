@@ -44,8 +44,6 @@ public class QMS_GuestHouseRequest_Employee
     private static final String close_Pay ="button[onclick='closePayment()']";
     private static final String subm_Bttn ="div[data-metric-title='SUBMITTED']";
 
-
-
     public QMS_GuestHouseRequest_Employee(Page page)
     {
         this.page=page;
