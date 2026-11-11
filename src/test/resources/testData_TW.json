@@ -7,7 +7,7 @@
     "Home_Page_Title": "Home | NMDC",
     "MenuName": "Facilities",
     "Module_Name": "Govt Facilities",
-    "Property_Value": "PLAYWRIGHT/SHREYAS/1",
+    "Property_Value": "PLAYWRIGHT/GUEST HOUSE/SHREYAS/1",
     "Property_Value1": "PLAYWRIGHT/MARRIAGEHALL/SHREYAS/1",
     "PropName": "Guest House 1",
     "HallName": "Marriage Hall 1",
@@ -65,7 +65,12 @@
     "transMode_Value": "1",
     "sub_Action": "Earmark / Provision Room",
     "hall_Value": "HALL",
-    "remarksText": "Earmarked"
+    "remarksText": "Earmarked",
+    "allottedAction": "Process Check-in",
+    "IDProof":"PAN Card",
+    "PAN_Number":"DTOPS3319L",
+    "Checkin_Remarks":"TESTING BOOKING CHECKIN",
+    "occupiedAction": "Complete Checkout"
 
   }
 ]
