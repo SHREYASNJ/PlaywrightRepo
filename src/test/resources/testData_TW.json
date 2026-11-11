@@ -70,7 +70,8 @@
     "IDProof":"PAN Card",
     "PAN_Number":"DTOPS3319L",
     "Checkin_Remarks":"TESTING BOOKING CHECKIN",
-    "occupiedAction": "Complete Checkout"
+    "occupiedAction": "Complete Checkout",
+    "adults": "3"
 
   }
 ]
