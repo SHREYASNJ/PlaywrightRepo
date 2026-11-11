@@ -13,6 +13,7 @@ public class QMS_CheckIn_CheckOut_Buyer_Hall
     Page page;
     FrameLocator rightFrame;
     QMS_PropertySearch_Actions propsearch;
+    checkout_Rating checkoutRating;
 
     private static final String rightframe = "iframe[name='right']";
     private static final String subm_Bttn ="div[data-metric-title='SUBMITTED']";
@@ -44,6 +45,9 @@ public class QMS_CheckIn_CheckOut_Buyer_Hall
     private static final String ratingLocation =".rating-row[data-attribute='Location']";
     private static final String ratingValue =".rating-row[data-attribute='Value']";
     private static final String ratingService =".rating-row[data-attribute='Service']";
+    private static final String confirm_CheckOUTButton="#btnConfirmCheckout";
+    private static final String rating="span[data-v='5']";
+
 
     public QMS_CheckIn_CheckOut_Buyer_Hall(Page page)
     {
@@ -56,7 +60,7 @@ public class QMS_CheckIn_CheckOut_Buyer_Hall
 
      this.rightFrame = page.frameLocator(rightframe);
         this.propsearch = new QMS_PropertySearch_Actions(page);
-
+        this.checkoutRating = new checkout_Rating();
     }
     public void hall_earmark_Provision_Buyer(String Property_Value1,
                                             String sub_Action, String hall_Value,
@@ -193,7 +197,7 @@ public void hall_process_Checkin_Buyer(String Property_Value1,
 
         }
     public void hall_process_checkOut_Buyer(String Property_Value1,
-                                            String occupiedAction)
+                                            String occupiedAction, String ratingStar)
     {
      Locator occBtn=rightFrame.locator(occupied_Bttn);
      assertThat(occBtn).isVisible();
@@ -214,27 +218,17 @@ public void hall_process_Checkin_Buyer(String Property_Value1,
                 new Locator.GetByTextOptions()
                         .setExact(true))).isVisible();
 
-        Locator cleanlinessRating = bookingModal.locator(ratingCleanliness);
-        assertThat(cleanlinessRating).isVisible();
-        cleanlinessRating.locator("span[data-v='5']").click();
-        assertThat(cleanlinessRating).hasAttribute("data-score", "5");
 
-        Locator loctationRating = bookingModal.locator(ratingLocation);
-        assertThat(loctationRating).isVisible();
-        loctationRating.locator("span[data-v='5']").click();
-        assertThat(loctationRating).hasAttribute("data-score", "5");
+        checkoutRating.selectRating(bookingModal, "Cleanliness", ratingStar);
 
-        Locator valueRating = bookingModal.locator(ratingValue);
-        assertThat(valueRating).isVisible();
-        valueRating.locator("span[data-v='5']").click();
-        assertThat(valueRating).hasAttribute("data-score", "5");
+        checkoutRating.selectRating(bookingModal, "Location", ratingStar);
 
-        Locator serviceRating = bookingModal.locator(ratingService);
-        assertThat(serviceRating).isVisible();
-        serviceRating.locator("span[data-v='5']").click();
-        assertThat(serviceRating).hasAttribute("data-score", "5");
+        checkoutRating.selectRating(bookingModal, "Value", ratingStar);
 
-        Locator confirmCheckoutBttn =bookingModal.locator("#btnConfirmCheckout");
+        checkoutRating.selectRating(bookingModal, "Service", ratingStar);
+
+
+        Locator confirmCheckoutBttn =bookingModal.locator(confirm_CheckOUTButton);
         assertThat(confirmCheckoutBttn).isVisible();
         assertThat(confirmCheckoutBttn).isEnabled();
         confirmCheckoutBttn.click();
