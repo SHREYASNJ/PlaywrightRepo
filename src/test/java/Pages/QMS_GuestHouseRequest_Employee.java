@@ -15,6 +15,7 @@ public class QMS_GuestHouseRequest_Employee
 {
     Page page;
     FrameLocator rightFrame;
+    Locator bookingModal;
     private static final String rightframe = "iframe[name='right']";
     private static final String qtrinputSearch = "#quarterSearchInput";
     private static final String bookNowbutton ="Book Now";
@@ -43,11 +44,32 @@ public class QMS_GuestHouseRequest_Employee
     private static final String pay_Status="td.ellipsis";
     private static final String close_Pay ="button[onclick='closePayment()']";
     private static final String subm_Bttn ="div[data-metric-title='SUBMITTED']";
+    private static final String booking="#bookingdiv";
+    private static final String bookingProp="Book This Property";
+    private static final String ALERT_MODAL = ".ajs-modal";
+    private static final String Alert_Header = ".ajs-header";
+    private static final String Alert_okButton = "button.ajs-button.ajs-ok";
+    private static final String payment_Frame="#paymentFrame";
+    private static final String instBank = "#sInstrumentBank";
+    private static final String instBankChecked = "option:checked";
+    private static final String instDate = "#sInstrumentDate";
+    private static final String ddUpdateBtton = "input[value='Update']";
+    private static final String dd_Date="#sInstrumentDate";
+    private static final String DATE_PICKER = "#ui-datepicker-div";
+    private static final String DATE_CALENDAR = ".ui-datepicker-calendar";
+    private static final String DATEPICKER_CALENDAR = ".ui-datepicker-calendar td a";
+
 
     public QMS_GuestHouseRequest_Employee(Page page)
     {
         this.page=page;
+        // Maximum time for elements to become actionable
+        page.setDefaultTimeout(30000);
+        // Maximum time for page navigation
+        page.setDefaultNavigationTimeout(60000);
         this.rightFrame = page.frameLocator(rightframe);
+        this.bookingModal = rightFrame.locator(booking);
+
     }
 
     public void guesthouseRequest_Employee(String Property_Value1, String Adult,
@@ -55,8 +77,8 @@ public class QMS_GuestHouseRequest_Employee
                                            String proptypedrpDown, String number_of_Rooms,
                                            String booking_Prop_Remarks, String transtype_Value,
                                            String transMode_Value, String ddNum,
-                                           String ddBran, String ddRem, String statusPayment
-    )
+                                           String ddBran, String ddRem,
+                                           String statusPayment, String Bank_Name)
     {
         LocalDate checkIn = LocalDate.now().plusDays(1);
         LocalDate checkOut = checkIn.plusDays(1);
@@ -75,27 +97,32 @@ public class QMS_GuestHouseRequest_Employee
         assertThat(bookNowButton).isEnabled();
         bookNowButton.click();
 
-        Locator PhoneNumber = rightFrame.locator(mobileNumber);
+        assertThat(bookingModal).isVisible();
+        assertThat(bookingModal.getByText(bookingProp,
+                        new Locator.GetByTextOptions()
+                                .setExact(true))).isVisible();
+
+        Locator PhoneNumber = bookingModal.locator(mobileNumber);
         assertThat(PhoneNumber).isVisible();
         assertThat(PhoneNumber).isDisabled();
 
-        Locator noofAdult = rightFrame.locator(numberofAdult);
+        Locator noofAdult = bookingModal.locator(numberofAdult);
         assertThat(noofAdult).isVisible();
         assertThat(noofAdult).isEnabled();
         noofAdult.fill(Adult);
 
-        Locator noofChildren = rightFrame.locator(numberofChildren);
+        Locator noofChildren = bookingModal.locator(numberofChildren);
         assertThat(noofChildren).isVisible();
         assertThat(noofChildren).isEnabled();
         noofChildren.fill(Children);
 
-        Locator specialDesc = rightFrame.locator(specDesc);
+        Locator specialDesc = bookingModal.locator(specDesc);
         assertThat(specialDesc).isVisible();
         assertThat(specialDesc).isEnabled();
         specialDesc.fill(SpeciDescription);
 
 // Check-in
-        Locator checkinDate = rightFrame.locator(checkin_Date);
+        Locator checkinDate = bookingModal.locator(checkin_Date);
         checkinDate.scrollIntoViewIfNeeded();
         assertThat(checkinDate).isVisible();
         assertThat(checkinDate).isEnabled();
@@ -107,7 +134,7 @@ public class QMS_GuestHouseRequest_Employee
         System.out.println("Check-in Date: " + checkIn);
 
 // Check-out
-        Locator checkoutDate = rightFrame.locator(checkoutdate);
+        Locator checkoutDate = bookingModal.locator(checkoutdate);
         checkoutDate.scrollIntoViewIfNeeded();
         assertThat(checkoutDate).isVisible();
         assertThat(checkoutDate).isEnabled();
@@ -118,52 +145,57 @@ public class QMS_GuestHouseRequest_Employee
         assertThat(checkoutDate).isVisible();
         System.out.println("Check-out Date: " + checkOut);
 
-        Locator bookingroom_Type=rightFrame.locator(bookngroomType);
+        Locator bookingroom_Type=bookingModal.locator(bookngroomType);
         bookingroom_Type.scrollIntoViewIfNeeded();
         bookingroom_Type.selectOption(new SelectOption()
                 .setLabel(proptypedrpDown));
         assertThat(bookingroom_Type.locator(select_Option))
                 .hasText(proptypedrpDown);
 
-        Locator noof_Rooms=rightFrame.locator(noofRooms);
+        Locator noof_Rooms=bookingModal.locator(noofRooms);
         noof_Rooms.scrollIntoViewIfNeeded();
         noof_Rooms.selectOption(new SelectOption()
                 .setLabel(number_of_Rooms));
         assertThat(noof_Rooms.locator(select_Option))
                 .hasText(number_of_Rooms);
 
-        Locator payNow_Button=rightFrame.getByRole(AriaRole.BUTTON,
-                new FrameLocator.GetByRoleOptions()
+        Locator payNow_Button=bookingModal.getByRole(AriaRole.BUTTON,
+                new Locator.GetByRoleOptions()
                         .setName(pNow));
         payNow_Button.scrollIntoViewIfNeeded();
         assertThat(payNow_Button).isVisible();
         assertThat(payNow_Button).isEnabled();
         payNow_Button.click();
 
-        Locator bookthisprop_Remarks=rightFrame.locator(bookprop_Remarks);
+        Locator bookthisprop_Remarks=bookingModal.locator(bookprop_Remarks);
         bookthisprop_Remarks.scrollIntoViewIfNeeded();
         assertThat(bookthisprop_Remarks).isVisible();
         assertThat(bookthisprop_Remarks).isEnabled();
         bookthisprop_Remarks.fill(booking_Prop_Remarks);
 
-        Locator confirmbook_Button=rightFrame.locator(confirm_booking_Button);
+        Locator confirmbook_Button=bookingModal.locator(confirm_booking_Button);
         confirmbook_Button.scrollIntoViewIfNeeded();
         assertThat(confirmbook_Button).isVisible();
         assertThat(confirmbook_Button).isEnabled();
         confirmbook_Button.click();
 
-        Locator alertMessage = rightFrame.locator(alert_Message);
-        assertThat(alertMessage).isVisible();
-        assertThat(alertMessage).containsText(alertmessage_Content);
+        Locator alertModal = rightFrame.locator(ALERT_MODAL);
+        assertThat(alertModal).isVisible();
+        assertThat(alertModal.locator(Alert_Header))
+                .hasText("Alert");
 
-        Locator OkButton = rightFrame.getByRole(AriaRole.BUTTON,
-                new FrameLocator.GetByRoleOptions()
-                        .setName(alertmessage_OK));
-        assertThat(OkButton).isVisible();
-        assertThat(OkButton).isEnabled();
-        OkButton.click();
+        Locator okButton = alertModal.locator(Alert_okButton).last();
+        assertThat(okButton).isVisible();
+        okButton.click();
 
-        Locator trans_Type= rightFrame.locator(t_Type)
+        FrameLocator paymentFrame = rightFrame.frameLocator(payment_Frame);
+        Locator paymentDetails =
+                paymentFrame.getByText("PAYMENT DETAILS",
+                        new FrameLocator.GetByTextOptions()
+                                .setExact(true));
+        assertThat(paymentDetails).isVisible();
+
+        Locator trans_Type= paymentFrame.locator(t_Type)
                 .nth(0);
         assertThat(trans_Type).isVisible();
         assertThat(trans_Type).isEnabled();
@@ -172,7 +204,7 @@ public class QMS_GuestHouseRequest_Employee
         assertThat(trans_Type.locator(select_Option))
                 .hasValue(transtype_Value);
 
-        Locator trans_Mode= rightFrame.locator(t_Mode)
+        Locator trans_Mode= paymentFrame.locator(t_Mode)
                 .nth(0);
         assertThat(trans_Mode).isVisible();
         assertThat(trans_Mode).isEnabled();
@@ -181,31 +213,31 @@ public class QMS_GuestHouseRequest_Employee
         assertThat(trans_Mode.locator(select_Option))
                 .hasValue(transMode_Value);
 
-        Locator ddNumber=rightFrame.locator(insNumber);
+        Locator ddNumber=paymentFrame.locator(insNumber);
         ddNumber.scrollIntoViewIfNeeded();
         assertThat(ddNumber).isVisible();
         assertThat(ddNumber).isEnabled();
         ddNumber.fill(ddNum);
 
-        Locator ddBranch=rightFrame.locator(insBranch);
+        Locator ddBranch=paymentFrame.locator(insBranch);
         ddBranch.scrollIntoViewIfNeeded();
         assertThat(ddBranch).isVisible();
         assertThat(ddBranch).isEnabled();
         ddBranch.fill(ddBran);
 
-        Locator ddremarks=rightFrame.locator(insRemaks);
+        Locator ddremarks=paymentFrame.locator(insRemaks);
         ddremarks.scrollIntoViewIfNeeded();
         assertThat(ddremarks).isVisible();
         assertThat(ddremarks).isEnabled();
         ddremarks.fill(ddRem);
 
-        Locator DDBank = rightFrame.locator("#sInstrumentBank");
-        DDBank.selectOption(new SelectOption().setLabel("Abu Dhabi Commercial Bank"));
-        assertThat(DDBank.locator("option:checked"))
-                .hasText("Abu Dhabi Commercial Bank");
+        Locator DDBank = paymentFrame.locator(instBank);
+        DDBank.selectOption(new SelectOption().setLabel(Bank_Name));
+        assertThat(DDBank.locator(instBankChecked))
+                .hasText(Bank_Name);
 
         //Date
-        Locator DDDate = rightFrame.locator("#sInstrumentDate");
+        Locator DDDate = paymentFrame.locator(instDate);
         DDDate.scrollIntoViewIfNeeded();
         assertThat(DDDate).isVisible();
         assertThat(DDDate).isEnabled();
@@ -213,21 +245,32 @@ public class QMS_GuestHouseRequest_Employee
 
         //Select Date
        //pending
+        Locator datedelection = paymentFrame.locator(dd_Date);
+        assertThat(datedelection).isVisible();
+        assertThat(datedelection).isEnabled();
+        datedelection.click();
 
+        Locator datePicker = paymentFrame.locator(DATE_PICKER);
+        assertThat(datePicker).isVisible();
+        assertThat(datePicker.locator(DATE_CALENDAR)).isVisible();
+        Locator date = datePicker.locator(DATEPICKER_CALENDAR)
+                .filter(new Locator.FilterOptions().setHasText("1"));
+        assertThat(date).isVisible();
+        date.click();
 
-        Locator DDupdate =rightFrame.locator("input[value='Update']");
+        Locator DDupdate =paymentFrame.locator(ddUpdateBtton);
         DDupdate.scrollIntoViewIfNeeded();
         assertThat(DDupdate).isVisible();
         assertThat(DDupdate).isEnabled();
         DDupdate.click();
 
-        Locator paymentStatus = rightFrame.locator(pay_Status)
+        Locator paymentStatus = paymentFrame.locator(pay_Status)
                 .filter(new Locator.FilterOptions().setHasText(statusPayment));
         assertThat(paymentStatus).hasCount(2);
         assertThat(paymentStatus.nth(0)).isVisible();
         assertThat(paymentStatus.nth(0)).hasText(statusPayment);
 
-        Locator close_payment=rightFrame.locator(close_Pay);
+        Locator close_payment=paymentFrame.locator(close_Pay);
         assertThat(close_payment).isVisible();
         assertThat(close_payment).isEnabled();
         close_payment.click();
@@ -243,11 +286,10 @@ public class QMS_GuestHouseRequest_Employee
 
         assertThat(PropertyCode).isVisible();
 
-
     }
     private void SelectCalendarDate(LocalDate date)
     {
-        Locator calendar = rightFrame.locator(datepicker);
+        Locator calendar = bookingModal.locator(datepicker);
         assertThat(calendar).isVisible();
         String year = String.valueOf(date.getYear());
         String month = String.valueOf(date.getMonthValue() - 1);

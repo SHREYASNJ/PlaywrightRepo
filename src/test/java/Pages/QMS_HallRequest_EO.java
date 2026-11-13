@@ -12,11 +12,17 @@ public class QMS_HallRequest_EO
 {
     Page page;
   FrameLocator rightFrame;
+  Locator bookingModal;
 
   public QMS_HallRequest_EO(Page page)
     {
       this.page=page;
+      // Maximum time for elements to become actionable
+      page.setDefaultTimeout(30000);
+      // Maximum time for page navigation
+      page.setDefaultNavigationTimeout(60000);
       this.rightFrame = page.frameLocator(rightframe);
+      this.bookingModal = rightFrame.locator(booking);
     }
 
     private static final String searchProp="#quarterSearchInput";
@@ -58,9 +64,10 @@ public class QMS_HallRequest_EO
   private static final String subm_Bttn ="div[data-metric-title='SUBMITTED']";
   private static final String ALERT_MODAL = ".ajs-modal";
   private static final String Alert_Header = ".ajs-header";
-  private static final String Alert_okButton = "button.ajs-reset";
+  private static final String Alert_okButton = "button.ajs-button.ajs-ok";
   private static final String payment_Frame="#paymentFrame";
   private static final String dp_Selected = "option:checked";
+  private static final String reqID = "#VendorRequestId2";
 
   public void thirdpartyhallRequest_EO(String Property_Value1,String tpempname_Value1,
                            String tpempMobilenumb_Value1, String tpempemail_Value1,
@@ -90,7 +97,6 @@ public class QMS_HallRequest_EO
         assertThat(BookNowButton).isEnabled();
         BookNowButton.click();
 
-        Locator bookingModal = rightFrame.locator(booking);
         assertThat(bookingModal).isVisible();
         assertThat(
                 bookingModal.getByText(bookingProp,
@@ -321,7 +327,7 @@ public class QMS_HallRequest_EO
     }
   public String GetRequestID()
   {
-    Locator RequestID = rightFrame.locator("#VendorRequestId2");
+    Locator RequestID = rightFrame.locator(reqID);
     assertThat(RequestID).isVisible();
     String requestID = RequestID.innerText().trim();
     System.out.println("Request ID: " + requestID);
