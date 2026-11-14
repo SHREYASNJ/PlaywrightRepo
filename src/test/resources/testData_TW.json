@@ -7,8 +7,8 @@
     "Home_Page_Title": "Home | NMDC",
     "MenuName": "Facilities",
     "Module_Name": "Govt Facilities",
-    "Property_Value": "PLAYWRIGHT/GUEST HOUSE/SHREYAS/1",
-    "Property_Value1": "PLAYWRIGHT/MARRIAGEHALL/SHREYAS/1",
+    "Property_Value": "Guest House",
+    "Property_Value1": "Marriage Hall",
     "PropName": "Guest House 1",
     "HallName": "Marriage Hall 1",
     "Region_Name": "Donimalai",
@@ -72,7 +72,10 @@
     "Checkin_Remarks":"TESTING BOOKING CHECKIN",
     "occupiedAction": "Complete Checkout",
     "adults": "3",
-    "ratingStar": "5"
+    "ratingStar": "5",
+    "PropAlert":"Property created successfully",
+    "availableFacility1": "Music System",
+    "availableFacility2":"Water Supply"
 
   }
 ]

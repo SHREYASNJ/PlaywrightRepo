@@ -1,5 +1,6 @@
 package Pages;
 
+import com.microsoft.playwright.FrameLocator;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.AriaRole;
@@ -9,10 +10,26 @@ import org.testng.Assert;
 import java.nio.file.Paths;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
-
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Properties;
 public class QMS_FacilityManagement_HallCreation_Buyer
 {
     Page page;
+    FrameLocator rightFrame;
+    QMS_Faclitiy_Alerts alertsHandle;
+    // Configuration properties
+    private final Properties properties = new Properties();
+    // Image paths
+    private Path photo1;
+    private Path photo2;
+
     private static final String CreateProp="#AvlProperty";
     private static final String Header = "Create New Property";
     private static final String module_select="#module-select";
@@ -42,193 +59,232 @@ public class QMS_FacilityManagement_HallCreation_Buyer
     private static final String twowheelerParking="e.g., 100";
     private static final String fourwheelerParkingPlaceholder="e.g., 50";
     private static final String kitchensizePlaceholder="e.g., 500";
+    private static final String rightframe = "iframe[name='right']";
+    private static final String genInfo_Tab = "1. General Info";
+    private static final String dp_Selected = "option:checked";
+    private static final String location_Tab = "2. Location";
+    private static final String hallDetailsTab="3. Hall Details";
+    private static final String images_Tab="4. Images";
+    public static final String availablepropertiesCardText="AVAILABLE PROPERTIES";
 
-    public QMS_FacilityManagement_HallCreation_Buyer()
+
+    public QMS_FacilityManagement_HallCreation_Buyer(Page page)
     {
      this.page=page;
+     this.rightFrame = page.frameLocator(rightframe);
+     this.alertsHandle=new QMS_Faclitiy_Alerts(page);
+        loadConfig();
     }
+
     public void create_Prop()
     {
-     Locator AvailableProperty=page.locator(CreateProp);
-        AvailableProperty.click();
-        AvailableProperty.isEnabled();
+     Locator AvailableProperty=rightFrame.locator(CreateProp);
+        assertThat(AvailableProperty).isVisible();
+        assertThat(AvailableProperty).isEnabled();
         AvailableProperty.click();
 
-        Locator createPropLabel = page.getByRole(
-                AriaRole.HEADING,
-                new Page.GetByRoleOptions().setName(Header)
-        );
+        Locator createPropLabel = rightFrame.getByRole(AriaRole.HEADING,
+                new FrameLocator.GetByRoleOptions().setName(Header));
         assertThat(createPropLabel).hasText(Header);
     }
+    private void loadConfig()
+    {
+        try (InputStream input = getClass()
+                .getClassLoader()
+                .getResourceAsStream("config.properties"))
+        {
+            if (input == null) {
+                throw new RuntimeException("config.properties not found");
+            }
+            properties.load(input);
+            String imageDirectory =
+                    properties.getProperty("image.directory");
+            if (imageDirectory == null || imageDirectory.isBlank()) {
+                throw new RuntimeException("image.directory is missing");
+            }
+            photo1 = Paths.get(imageDirectory, "PROPERTYPHOTO1.jpg");
+            photo2 = Paths.get(imageDirectory, "PROPERTYPHOTO2.jpg");
+            // Verify image files exist
+            if (!Files.isRegularFile(photo1)) {
+                throw new RuntimeException("Image not found: " + photo1);
+            }
+            if (!Files.isRegularFile(photo2)) {
+                throw new RuntimeException("Image not found: " + photo2);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to load configuration", e);
+        }
+    }
+
     public void create_Hall(String Module_Name, String Property_Value1,
                             String HallName, String Region_Name,
                             String SectorName, String IndianState
             , String LocationName, String GH_InchargeName,
                             String ContactValue, String auxArea_Value
-            , String DescriptionValue)
+            , String DescriptionValue, String PropAlert)
     {
-        Locator GeneralInfo = page.getByRole(AriaRole.BUTTON,
-                new Page.GetByRoleOptions()
-                .setName("1. General Info"));
+        Locator GeneralInfo = rightFrame.getByRole(AriaRole.BUTTON,
+                new FrameLocator.GetByRoleOptions()
+                .setName(genInfo_Tab));
+        assertThat(GeneralInfo).isVisible();
+        assertThat(GeneralInfo).isEnabled();
         GeneralInfo.click();
 
-        Locator moduleSelect=page.locator(module_select);
+        Locator moduleSelect=rightFrame.locator(module_select).nth(0);
         moduleSelect.selectOption(new SelectOption().setLabel(Module_Name));
-        assertThat(moduleSelect.locator("option:checked"))
+        assertThat(moduleSelect.locator(dp_Selected))
                 .hasText(Module_Name);
 
-        Locator type = page.locator(Property_Type);
+        Locator type = rightFrame.locator(Property_Type).nth(0);
         type.selectOption(new SelectOption().setLabel(Property_Value1));
-        assertThat(type.locator("option:checked"))
+        assertThat(type.locator(dp_Selected))
                 .hasText(Property_Value1);
 
-        Locator propName=page.locator(prop_Name);
+        Locator propName=rightFrame.locator(prop_Name).nth(0);
         propName.scrollIntoViewIfNeeded();
         propName.fill(HallName);
 
-       Locator region= page.locator(RegionDP);
+        Locator region= rightFrame.locator(RegionDP);
         region.selectOption(new SelectOption().setLabel(Region_Name));
-        assertThat(region.locator("option:checked"))
+        assertThat(region.locator(dp_Selected))
                 .hasText(Region_Name);
 
-        Locator sector = page.getByPlaceholder(Sector);
+        Locator sector = rightFrame.getByPlaceholder(Sector);
         sector.scrollIntoViewIfNeeded();
         sector.fill(SectorName);
         assertThat(sector).hasValue(SectorName);
 
-        Locator stateName = page.locator(state);
+        Locator stateName = rightFrame.locator(state).nth(0);
         stateName.scrollIntoViewIfNeeded();
         stateName.selectOption(new SelectOption().setLabel(IndianState));
-        assertThat(stateName.locator("option:checked"))
+        assertThat(stateName.locator(dp_Selected))
                 .hasText(IndianState);
 
-        Locator locationName = page.getByPlaceholder(LocationPlaceholder);
+        Locator locationName = rightFrame.getByPlaceholder(LocationPlaceholder);
         locationName.scrollIntoViewIfNeeded();
         locationName.fill(LocationName);
         assertThat(locationName).hasValue(LocationName);
 
-        Locator inchargeName = page.locator(Incharge_Name);
+        Locator inchargeName = rightFrame.locator(Incharge_Name);
         inchargeName.scrollIntoViewIfNeeded();
         inchargeName.fill(GH_InchargeName);
         assertThat(inchargeName).hasValue(GH_InchargeName);
 
-        Locator Contact = page.locator(Contact_Details);
+        Locator Contact = rightFrame.locator(Contact_Details);
         Contact.scrollIntoViewIfNeeded();
         Contact.fill(ContactValue);
         assertThat(Contact).hasValue(ContactValue);
 
-        Locator aux_Area = page.locator(Auxiliary_Area);
+        Locator aux_Area = rightFrame.locator(Auxiliary_Area);
         aux_Area.scrollIntoViewIfNeeded();
         aux_Area.fill(auxArea_Value);
-        assertThat(Contact).hasValue(auxArea_Value);
+        assertThat(aux_Area).hasValue(auxArea_Value);
 
-        Locator desc = page.getByPlaceholder(Description);
+        Locator desc = rightFrame.getByPlaceholder(Description);
         desc.scrollIntoViewIfNeeded();
         desc.fill(DescriptionValue);
         assertThat(desc).hasValue(DescriptionValue);
 
-        page.evaluate("window.scrollTo(0, 0)");
-        Locator saveBttn = page.locator(save_Button);
+        // Scroll to the top of the iframe
+        rightFrame.locator("body")
+                .evaluate("element => element.scrollTo(0, 0)");
+        Locator saveBttn = rightFrame.locator(save_Button).nth(0);
         assertThat(saveBttn).isVisible();
         assertThat(saveBttn).isEnabled();
         saveBttn.click();
 
-        page.onceDialog(dialog -> {
-            Assert.assertEquals(
-                    dialog.message(),
-                    "Property created successfully.",
-                    "Alert message validation failed"
-            );
-            dialog.accept();
-        });
+        alertsHandle.alert(PropAlert);
     }
+
     public void Create_HallLocation_Details(String PropRegion, String estate_Name,
-                                        String physicaladdressValue)
+                                        String physicaladdressValue, String PropAlert)
     {
-        page.evaluate("window.scrollTo(0, 0)");
-        Locator Location_Details = page.getByRole(AriaRole.BUTTON,
-                new Page.GetByRoleOptions()
-                .setName("2. Location"));
+        rightFrame.locator("body")
+                .evaluate("element => element.scrollTo(0, 0)");
+        Locator Location_Details = rightFrame.getByRole(AriaRole.BUTTON,
+                new FrameLocator.GetByRoleOptions()
+                .setName(location_Tab));
         Location_Details.click();
 
-        Locator regionSelect = page.locator(prop_Region);
+        Locator regionSelect = rightFrame.locator(prop_Region).nth(0);
         regionSelect.selectOption(new SelectOption().setLabel(PropRegion));
-        assertThat(regionSelect.locator("option:checked"))
+        assertThat(regionSelect.locator(dp_Selected))
                 .hasText(PropRegion);
 
-        Locator prop_estate = page.locator(estate);
+        Locator prop_estate = rightFrame.locator(estate);
         prop_estate.selectOption(new SelectOption().setLabel(estate_Name));
-        assertThat(prop_estate.locator("option:checked"))
+        assertThat(prop_estate.locator(dp_Selected))
                 .hasText(estate_Name);
 
-        Locator physicalAddress = page.getByPlaceholder(physicaladdressPlaceholder);
+        Locator physicalAddress = rightFrame.getByPlaceholder(physicaladdressPlaceholder);
         physicalAddress.fill(physicaladdressValue);
 
-        page.evaluate("window.scrollTo(0, 0)");
-        Locator saveBttn = page.locator(save_Button);
+        rightFrame.locator("body")
+                .evaluate("element => element.scrollTo(0, 0)");
+        Locator saveBttn = rightFrame.locator(save_Button);
         assertThat(saveBttn).isVisible();
         assertThat(saveBttn).isEnabled();
         saveBttn.click();
 
-        page.onceDialog(dialog -> {
-            Assert.assertEquals(
-                    dialog.message(),
-                    "Property updated successfully.",
-                    "Alert message validation failed"
-            );
-            dialog.accept();
-        });
+        alertsHandle.alert(PropAlert);
     }
 public void Create_HALL_Details(String hallseatingValue, String DininghallseatingValue,
                                 String guestroomsValue, String acRoomsValue,
                                 String nonacRoomsValue, String twowheelerparkingValue,
                                 String fourwheelerparkingValue, String kitchensizeValue,
-                                String rowText, String amount
-                                )
+                                String rowText, String amount, String PropAlert,
+                                String availableFacility1,
+                                String availableFacility2)
 {
-    page.evaluate("window.scrollTo(0, 0)");
-    Locator HallDetails = page.getByRole(AriaRole.BUTTON,
-            new Page.GetByRoleOptions()
-                    .setName("3. Hall Details"));
+    rightFrame.locator("body")
+            .evaluate("element => element.scrollTo(0, 0)");
+    Locator HallDetails = rightFrame.getByRole(AriaRole.BUTTON,
+            new FrameLocator.GetByRoleOptions()
+                    .setName(hallDetailsTab));
     HallDetails.click();
 
-    Locator Main_Hall_Seating =page.getByPlaceholder(mh_seating);
+    Locator Main_Hall_Seating =rightFrame.getByPlaceholder(mh_seating)
+            .nth(1);
     Main_Hall_Seating.clear();
     Main_Hall_Seating.fill(hallseatingValue);
     assertThat(Main_Hall_Seating).hasValue(hallseatingValue);
 
-    Locator Dining_Hall_Seating =page.getByPlaceholder(Din_Capacity);
+    Locator Dining_Hall_Seating =rightFrame.getByPlaceholder(Din_Capacity);
     Dining_Hall_Seating.clear();
     Dining_Hall_Seating.fill(DininghallseatingValue);
     assertThat(Dining_Hall_Seating).hasValue(DininghallseatingValue);
 
-    Locator guestRoom =page.getByPlaceholder(guestRoomPlaceholder);
+    Locator guestRoom =rightFrame.getByPlaceholder(guestRoomPlaceholder)
+            .nth(2);
     guestRoom.clear();
     guestRoom.fill(guestroomsValue);
     assertThat(guestRoom).hasValue(guestroomsValue);
 
-    Locator acRoom =page.getByPlaceholder(ac_RoomPlaceHolder);
+    Locator acRoom =rightFrame.getByPlaceholder(ac_RoomPlaceHolder).nth(1);
     acRoom.clear();
     acRoom.fill(acRoomsValue);
     assertThat(acRoom).hasValue(acRoomsValue);
 
-    Locator nonacRoom =page.getByPlaceholder(nonac_RoomPlaceHolder);
+    Locator nonacRoom =rightFrame.getByPlaceholder(nonac_RoomPlaceHolder).nth(0);
     nonacRoom.clear();
     nonacRoom.fill(nonacRoomsValue);
     assertThat(nonacRoom).hasValue(nonacRoomsValue);
 
-    Locator two_wheeler_parking =page.getByPlaceholder(twowheelerParking);
+    Locator two_wheeler_parking =rightFrame.getByPlaceholder(twowheelerParking)
+            .nth(0);
     two_wheeler_parking.clear();
     two_wheeler_parking.fill(twowheelerparkingValue);
     assertThat(two_wheeler_parking).hasValue(twowheelerparkingValue);
 
-    Locator four_wheeler_parking =page.getByPlaceholder(fourwheelerParkingPlaceholder);
+    Locator four_wheeler_parking =rightFrame
+            .getByPlaceholder(fourwheelerParkingPlaceholder).nth(2);
     four_wheeler_parking.scrollIntoViewIfNeeded();
     four_wheeler_parking.clear();
     four_wheeler_parking.fill(fourwheelerparkingValue);
     assertThat(four_wheeler_parking).hasValue(fourwheelerparkingValue);
 
-    Locator kitchensize_parking =page.getByPlaceholder(kitchensizePlaceholder);
+    Locator kitchensize_parking =rightFrame
+            .getByPlaceholder(kitchensizePlaceholder).nth(2);
     kitchensize_parking.scrollIntoViewIfNeeded();
     kitchensize_parking.clear();
     kitchensize_parking.fill(kitchensizeValue);
@@ -256,86 +312,98 @@ public void Create_HALL_Details(String hallseatingValue, String Dininghallseatin
     fill_amount("Cleaning Charges","10");
     fill_amount("GST Applicable %","18");
 
-    Locator musicSystem = page.getByRole(
+    Locator musicSystem = rightFrame.getByRole(
             AriaRole.CHECKBOX,
-            new Page.GetByRoleOptions().setName("Music System")
+            new FrameLocator.GetByRoleOptions().setName(availableFacility1)
     );
     musicSystem.scrollIntoViewIfNeeded();
     musicSystem.check();
+    assertThat(musicSystem).isChecked();
 
-    Locator waterSupply = page.getByRole(
+    Locator waterSupply = rightFrame.getByRole(
             AriaRole.CHECKBOX,
-            new Page.GetByRoleOptions().setName("Water Supply")
+            new FrameLocator.GetByRoleOptions().setName(availableFacility2)
     );
     waterSupply.scrollIntoViewIfNeeded();
     waterSupply.check();
+    assertThat(waterSupply).isChecked();
+
+    rightFrame.locator("body")
+            .evaluate("element => element.scrollTo(0, 0)");
+    Locator saveBttn = rightFrame.locator(save_Button);
+    assertThat(saveBttn).isVisible();
+    assertThat(saveBttn).isEnabled();
+    saveBttn.click();
+
+    alertsHandle.alert(PropAlert);
 
 }
 
-public void fill_amount(String rowText, String amount)
-{
-    Locator row = page.locator("tr")
-            .filter(new Locator.FilterOptions().setHasText(rowText));
-
-    // Verify that exactly one row matches
-    assertThat(row).hasCount(1);
-
-    Locator amountField = row.getByRole(
-            AriaRole.SPINBUTTON,
-            new Locator.GetByRoleOptions().setName("Enter Amount")
-    );
-
-    // Verify that exactly one amount field exists in the row
-    assertThat(amountField).hasCount(1);
-
-    amountField.scrollIntoViewIfNeeded();
-    amountField.fill(amount);
-}
-    public void Upload_Images()
+    public void fill_amount(String rowText, String amount)
     {
-        page.evaluate("window.scrollTo(0, 0)");
-        Locator Images = page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions()
-                .setName("4. Images"));
+        // Locate the row containing the charge name
+        Locator row = rightFrame.locator("tr")
+                .filter(new Locator.FilterOptions().setHasText(rowText));
+        // Verify exactly one row matches
+        assertThat(row).hasCount(1);
+        // Locate the amount input inside that row
+        Locator amountField = row.getByPlaceholder("Enter Amount");
+        // Verify exactly one amount field exists
+        assertThat(amountField).hasCount(1);
+        amountField.scrollIntoViewIfNeeded();
+        amountField.fill(amount);
+        // Verify the entered amount
+        assertThat(amountField).hasValue(amount);
+    }
+    public void Upload_Images(String PropAlert)
+    {
+        rightFrame.locator("body")
+                .evaluate("element => element.scrollTo(0, 0)");
+        Locator Images = rightFrame.getByRole(
+                AriaRole.BUTTON,
+                new FrameLocator.GetByRoleOptions()
+                        .setName(images_Tab)
+        );
         Images.click();
-
-        Locator uploadPhotos = page.locator(UploadphotoSelector);
-
-        uploadPhotos.setInputFiles(new java.nio.file.Path[] {
-                Paths.get("C:\\Users\\shreyasn\\Downloads\\HOUSE\\PROPERTYPHOTO1.jpg"),
-                Paths.get("C:\\Users\\shreyasn\\Downloads\\HOUSE\\PROPERTYPHOTO2.jpg"),
+        Locator uploadPhotos = rightFrame.locator(UploadphotoSelector);
+        // Upload both images
+        uploadPhotos.setInputFiles(new Path[]{
+                photo1,
+                photo2
         });
-
-        page.evaluate("window.scrollTo(0,0)");
-        Locator saveBttn = page.locator(save_Button);
+        // Save
+        rightFrame.locator("body")
+                .evaluate("element => element.scrollTo(0, 0)");
+        Locator saveBttn = rightFrame.locator(save_Button);
         assertThat(saveBttn).isVisible();
         assertThat(saveBttn).isEnabled();
         saveBttn.click();
-
-        page.onceDialog(dialog -> {
-            Assert.assertEquals(
-                    dialog.message(),
-                    "Property updated successfully.",
-                    "Alert message validation failed"
-            );
-            dialog.accept();
-        });
+        alertsHandle.alert(PropAlert);
     }
     public void Publish_Property(String HallName)
     {
-        page.evaluate("window.scrollTo(0,0)");
-        Locator Publish_Button = page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions()
+        rightFrame.locator("body")
+                .evaluate("element => element.scrollTo(0, 0)");
+        Locator Publish_Button = rightFrame.getByRole(AriaRole.BUTTON,
+                new FrameLocator.GetByRoleOptions()
                 .setName(PubProp));
-        assertThat(Publish_Button).isVisible();
-        assertThat(Publish_Button).isEnabled();
-        Publish_Button.click();
+        assertThat(Publish_Button).hasCount(2);
+        assertThat(Publish_Button.nth(1)).isVisible();
+        assertThat(Publish_Button.nth(1)).isEnabled();
+        Publish_Button.nth(1).click();
 
-        //Locator Publish_Button = page.locator("#btnPublish");
-        //Publish_Button.click();
+        Locator availPropCard = rightFrame.getByText(availablepropertiesCardText,
+                new FrameLocator.GetByTextOptions().setExact(true));
+        assertThat(availPropCard).isVisible();
+        availPropCard.click();
 
-        Locator search=page.locator(searchprop);
+        Locator search=rightFrame.locator(searchprop);
+        assertThat(search).isVisible();
+        assertThat(search).isEnabled();
         search.fill(HallName);
 
-        Locator PropAvailablelabelname=page.getByText(AvalProp);
-        assertThat(PropAvailablelabelname).isVisible();
+        Locator hallResult = rightFrame.getByText(HallName,
+                new FrameLocator.GetByTextOptions().setExact(true));
+        assertThat(hallResult).isVisible();
     }
 }
