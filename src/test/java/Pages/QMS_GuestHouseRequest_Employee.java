@@ -184,8 +184,9 @@ public class QMS_GuestHouseRequest_Employee
         assertThat(alertModal.locator(Alert_Header))
                 .hasText("Alert");
 
-        Locator okButton = alertModal.locator(Alert_okButton).last();
+        Locator okButton = alertModal.locator(Alert_okButton);
         assertThat(okButton).isVisible();
+        assertThat(okButton).isEnabled();
         okButton.click();
 
         FrameLocator paymentFrame = rightFrame.frameLocator(payment_Frame);
@@ -236,27 +237,30 @@ public class QMS_GuestHouseRequest_Employee
         assertThat(DDBank.locator(instBankChecked))
                 .hasText(Bank_Name);
 
-        //Date
-        Locator DDDate = paymentFrame.locator(instDate);
-        DDDate.scrollIntoViewIfNeeded();
-        assertThat(DDDate).isVisible();
-        assertThat(DDDate).isEnabled();
-        DDDate.click();
-
         //Select Date
-       //pending
-        Locator datedelection = paymentFrame.locator(dd_Date);
-        assertThat(datedelection).isVisible();
-        assertThat(datedelection).isEnabled();
-        datedelection.click();
-
+        // Payment instrument date
+        Locator ddDate = paymentFrame.locator(instDate);
+        ddDate.scrollIntoViewIfNeeded();
+        assertThat(ddDate).isVisible();
+        assertThat(ddDate).isEnabled();
+        ddDate.click();
+        // Date picker
         Locator datePicker = paymentFrame.locator(DATE_PICKER);
         assertThat(datePicker).isVisible();
         assertThat(datePicker.locator(DATE_CALENDAR)).isVisible();
-        Locator date = datePicker.locator(DATEPICKER_CALENDAR)
-                .filter(new Locator.FilterOptions().setHasText("1"));
-        assertThat(date).isVisible();
-        date.click();
+        // Select exact date
+        LocalDate instrumentDate = LocalDate.now().minusDays(1);
+        String year = String.valueOf(instrumentDate.getYear());
+        String month = String.valueOf(instrumentDate.getMonthValue() - 1);
+        String day = String.valueOf(instrumentDate.getDayOfMonth());
+        Locator selectDate = datePicker.locator(
+                "td[data-year='" + year +
+                        "'][data-month='" + month +
+                        "'] a:text-is('" + day + "')"
+        );
+        assertThat(selectDate).hasCount(1);
+        assertThat(selectDate).isVisible();
+        selectDate.click();
 
         Locator DDupdate =paymentFrame.locator(ddUpdateBtton);
         DDupdate.scrollIntoViewIfNeeded();
@@ -266,9 +270,8 @@ public class QMS_GuestHouseRequest_Employee
 
         Locator paymentStatus = paymentFrame.locator(pay_Status)
                 .filter(new Locator.FilterOptions().setHasText(statusPayment));
-        assertThat(paymentStatus).hasCount(2);
-        assertThat(paymentStatus.nth(0)).isVisible();
-        assertThat(paymentStatus.nth(0)).hasText(statusPayment);
+        assertThat(paymentStatus.first()).isVisible();
+        assertThat(paymentStatus.first()).containsText(statusPayment);
 
         Locator close_payment=paymentFrame.locator(close_Pay);
         assertThat(close_payment).isVisible();

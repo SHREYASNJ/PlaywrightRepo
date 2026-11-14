@@ -40,7 +40,7 @@ public class QMS_HallRequest_EO
   private static final String tpDepartment="#departmentThirdParty";
   private static final String tpspecdesc="#specialdescriptionThirdParty";
   private static final String tpcheckIN="#bookingcheckinThirdParty";
-  private static final String calender=".ui-datepicker-calendar td a";
+  private static final String CALENDAR=".ui-datepicker-calendar";
   private static final String tp_checkOut="#bookingcheckoutThirdParty";
   private static final String tp_payNow="Pay Now";
   private static final String toBookingRemarks="#bookingremarksThirdParty";
@@ -85,11 +85,12 @@ public class QMS_HallRequest_EO
         assertThat(search).isEnabled();
         search.fill(Property_Value1);
 
-        Locator propertyCode = rightFrame.locator(propcode)
-                .filter(new Locator.FilterOptions().setHasText(propcodeText));
+      Locator propertyCode = rightFrame
+              .getByText(propcodeText, new FrameLocator.GetByTextOptions()
+                      .setExact(false));
+      assertThat(propertyCode).isVisible();
 
-        assertThat(propertyCode).containsText(propcodeText);
-
+      assertThat(propertyCode).isVisible();
         Locator BookNowButton = rightFrame.getByRole(
                 AriaRole.BUTTON,
                 new FrameLocator.GetByRoleOptions().setName(booknow_Button));
@@ -126,13 +127,15 @@ public class QMS_HallRequest_EO
       assertThat(checkIn).isVisible();
       checkIn.click();
 
-      Locator checkInDate = bookingModal.locator(calender)
+      Locator checkInDate = bookingModal.locator(CALENDAR)
               .getByRole(AriaRole.LINK,
                       new Locator.GetByRoleOptions()
                               .setName(checkinDate)
                               .setExact(true));
 
+      assertThat(checkInDate).hasCount(1);
       assertThat(checkInDate).isVisible();
+
       checkInDate.click();
 
       // Check-out date
@@ -141,13 +144,15 @@ public class QMS_HallRequest_EO
       assertThat(checkOut).isVisible();
       checkOut.click();
 
-      Locator checkOutDate = bookingModal.locator(calender)
+      Locator checkOutDate = bookingModal.locator(CALENDAR)
               .getByRole(AriaRole.LINK,
                       new Locator.GetByRoleOptions()
                               .setName(checkoutDate)
                               .setExact(true));
 
+      assertThat(checkOutDate).hasCount(1);
       assertThat(checkOutDate).isVisible();
+      assertThat(checkOutDate).isEnabled();
       checkOutDate.click();
 
       Locator payNow=bookingModal.getByRole(AriaRole.BUTTON,
@@ -174,11 +179,12 @@ public class QMS_HallRequest_EO
       assertThat(closeTerms).isEnabled();
       closeTerms.click();
 
-      Locator closeTerms_checkBox=bookingModal.locator(conf_BookingCB);
-      closeTerms_checkBox.scrollIntoViewIfNeeded();
-      assertThat(closeTerms_checkBox).isVisible();
-      assertThat(closeTerms_checkBox).isEnabled();
-      closeTerms_checkBox.click();
+      Locator termsCheckBox = bookingModal.locator(conf_BookingCB);
+      termsCheckBox.scrollIntoViewIfNeeded();
+      assertThat(termsCheckBox).isVisible();
+      assertThat(termsCheckBox).isEnabled();
+      termsCheckBox.check();
+      assertThat(termsCheckBox).isChecked();
 
       Locator confirm_Booking=bookingModal.locator(conf_Booking);
       confirm_Booking.scrollIntoViewIfNeeded();
@@ -238,7 +244,7 @@ public class QMS_HallRequest_EO
       assertThat(instrumentDate).isVisible();
       assertThat(instrumentDate).isEnabled();
       instrumentDate.click();
-      Locator calendarDate = paymentFrame.locator(calender)
+      Locator calendarDate = paymentFrame.locator(CALENDAR)
               .getByRole(
                       AriaRole.LINK,
                       new Locator.GetByRoleOptions()
@@ -289,7 +295,7 @@ public class QMS_HallRequest_EO
       assertThat(instrumentDate).isEnabled();
       instrumentDate.click();
 
-      Locator calendarDate1 = paymentFrame.locator(calender)
+      Locator calendarDate1 = paymentFrame.locator(CALENDAR)
               .getByRole(AriaRole.LINK,
                       new Locator.GetByRoleOptions()
                               .setName(instru_Date)
